@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/pixie-sh/logger-go v0.1.0
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/crypto v0.19.0
 )
 
 require (
