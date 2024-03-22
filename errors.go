@@ -14,7 +14,7 @@ import (
 // ErrorCode error code used by Error to specify some known error
 type ErrorCode struct {
 	Name      string `json:"name"`
-	Value     int64  `json:"value"`
+	Value     int    `json:"value"`
 	HTTPError int    `json:"-"`
 }
 
@@ -45,7 +45,7 @@ type FieldError struct {
 }
 
 // NewErrorCode returns an ErrorCode
-func NewErrorCode(name string, value int64, httpCode int) ErrorCode {
+func NewErrorCode(name string, value int, httpCode int) ErrorCode {
 	return ErrorCode{
 		Name:      name,
 		Value:     value,
@@ -78,8 +78,7 @@ func NewWithError(err error, format string, messages ...interface{}) E {
 	}
 
 	err2 := newWithCallerDepth(caller.TwoHopsCallerDepth, code, format, messages...)
-	err2.WithNestedError(err)
-	return err2
+	return err2.WithNestedError(err)
 }
 
 func newWithCallerDepth(depth caller.Depth, code ErrorCode, format string, messages ...interface{}) E {
@@ -102,7 +101,7 @@ func newWithCallerDepth(depth caller.Depth, code ErrorCode, format string, messa
 func NewValidationFailure(field string, rule string, message string) E {
 	errorResult := new(Error)
 
-	errorResult.Code = InvalidFormData
+	errorResult.Code = InvalidFormDataCode
 	errorResult.Message = "Invalid form sent."
 
 	failure := new(FieldError)
@@ -122,6 +121,12 @@ func (e *Error) Error() string {
 	}
 
 	return e.Code.String()
+}
+
+// JSON return a json string
+func (e *Error) JSON() []byte {
+	s, _ := json.Marshal(&e)
+	return s
 }
 
 // GetHTTPStatus get's the http status for the error
@@ -185,7 +190,7 @@ func (ec *ErrorCode) UnmarshalJSON(data []byte) error {
 	}
 
 	ec.Name = codeParts[0]
-	ec.Value = value
+	ec.Value = int(value)
 	return nil
 }
 

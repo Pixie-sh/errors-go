@@ -62,7 +62,7 @@ func TestErrors(t *testing.T) {
 	noCodeErr := New("no error %s", "one")
 	assert.Equal(t, "no error one", noCodeErr.Error())
 
-	blob, _ := json.Marshal(err5)
+	blob := err5.JSON()
 	fmt.Println(string(blob))
 
 	var err51 Error

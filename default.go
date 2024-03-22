@@ -15,50 +15,37 @@ const (
 	HTTPIncompleteRegistration = 501 // Uncompleted registration process.
 )
 
-// Form Errors
+// Errors 40000
 var (
-	NotFoundErrorCode = NewErrorCode("GENERIC", 100, HTTPNotFound)
-	InvalidFormData   = NewErrorCode("GENERIC", 422, HTTPInvalidData)
+	SystemClientErrorCodeBase       = 40000
+	InvalidFormDataCode             = NewErrorCode("InvalidFormDataError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	NotFoundErrorCode               = NewErrorCode("NotFoundError", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
+	TooManyAttemptsErrorCode        = NewErrorCode("TooManyAttemptsError", SystemClientErrorCodeBase+HTTPThrottling, HTTPThrottling)
+	UnauthorizedErrorCode           = NewErrorCode("UnauthorizedError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
+	ForbiddenErrorCode              = NewErrorCode("ForbiddenError", SystemClientErrorCodeBase+HTTPEndpointForbidden, HTTPEndpointForbidden)
+	InvalidJWTErrorCode             = NewErrorCode("InvalidJWTError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
+	InvalidAuthTokenErrorCode       = NewErrorCode("InvalidAuthTokenError", SystemClientErrorCodeBase+HTTPSecurityKeyMissing, HTTPSecurityKeyMissing)
+	ErrorPerformingRequestErrorCode = NewErrorCode("ErrorPerformingRequestError", SystemClientErrorCodeBase+HTTPBadRequest, HTTPBadRequest)
+	ErrorUnmarshallBodyErrorCode    = NewErrorCode("ErrorUnmarshallBodyError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
 )
 
-// Access Errors
+// Errors 50000
 var (
-	TooManyAttemptsErrorCode = NewErrorCode("GENERIC", 429, HTTPThrottling)
-	UnAuthorized             = NewErrorCode("GENERIC", 401, HTTPNotAuthenticated)
-	Forbidden                = NewErrorCode("GENERIC", 403, HTTPEndpointForbidden)
-)
-
-// Internal Errors
-var (
-	FailedToWriteDataErrorCode = NewErrorCode("GENERIC", 997, HTTPServerError)
-	FailedToReadDataErrorCode  = NewErrorCode("GENERIC", 998, HTTPServerError)
-	DBErrorCode                = NewErrorCode("GENERIC", 999, HTTPServerError)
+	SystemSystemErrorCodeBase            = 50000
+	FailedToWriteDataErrorCode           = NewErrorCode("FailedToWriteDataError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	FailedToReadDataErrorCode            = NewErrorCode("FailedToReadDataError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	DBErrorCode                          = NewErrorCode("DBError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	UnknownErrorCode                     = NewErrorCode("UnknownError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	InvalidProcessHandlerErrorCode       = NewErrorCode("InvalidProcessHandlerError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	InvalidCtxMetricErrorCode            = NewErrorCode("InvalidCtxMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	ErrorCreatingMetricErrorCode         = NewErrorCode("ErrorCreatingMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	EventSourceMappingDontExistErrorCode = NewErrorCode("EventSourceMappingDontExistError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
 )
 
 // Generic Errors
 var (
-	NoErrorCode                       = NewErrorCode("ERROR", 0, HTTPServerError)
-	ErrorCreatingDependencyErrorCode  = NewErrorCode("ERROR", 100, HTTPServerError)
-	ErrorLoadingStructConsulErrorCode = NewErrorCode("ERROR", 101, HTTPServerError)
-)
-
-// HTTP default error codes
-var (
-	UnknownErrorCode                     = NewErrorCode("HTTP_SERVER", 100, HTTPServerError)
-	InvalidProcessHandlerErrorCode       = NewErrorCode("HTTP_SERVER", 101, HTTPServerError)
-	InvalidCtxMetricErrorCode            = NewErrorCode("HTTP_SERVER", 103, HTTPServerError)
-	ErrorCreatingMetricErrorCode         = NewErrorCode("HTTP_SERVER", 104, HTTPServerError)
-	EventSourceMappingDontExistErrorCode = NewErrorCode("HTTP_SERVER", 105, HTTPServerError)
-)
-
-// Gates default error codes
-var (
-	InvalidJWTErrorCode       = NewErrorCode("GATES", 100, HTTPNotAuthenticated)
-	InvalidAuthTokenErrorCode = NewErrorCode("GATES", 101, HTTPSecurityKeyMissing)
-)
-
-// Rest default errors
-var (
-	ErrorPerformingRequestErrorCode = NewErrorCode("REST", 101, HTTPBadRequest)
-	ErrorUnmarshallBodyErrorCode    = NewErrorCode("REST", 102, HTTPInvalidData)
+	SystemNoCodeCodeBase              = 90000
+	NoErrorCode                       = NewErrorCode("NoError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
+	ErrorCreatingDependencyErrorCode  = NewErrorCode("ErrorCreatingDependencyError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
+	ErrorLoadingStructConsulErrorCode = NewErrorCode("ErrorLoadingStructConsulError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
 )
