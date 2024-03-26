@@ -72,7 +72,7 @@ func NewWithError(err error, format string, messages ...interface{}) E {
 	}
 
 	castedErr, ok := err.(E)
-	code := NoErrorCode
+	code := UnknownErrorCode
 	if ok {
 		code = castedErr.Code
 	}
