@@ -45,7 +45,7 @@ var (
 // Generic Errors
 var (
 	SystemNoCodeCodeBase              = 90000
-	NoErrorCode                       = NewErrorCode("NoError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
+	GenericErrorCode                  = NewErrorCode("GenericErrorCode", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
 	ErrorCreatingDependencyErrorCode  = NewErrorCode("ErrorCreatingDependencyError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
 	ErrorLoadingStructConsulErrorCode = NewErrorCode("ErrorLoadingStructConsulError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
 )

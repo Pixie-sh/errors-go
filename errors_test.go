@@ -77,5 +77,5 @@ func TestErrors(t *testing.T) {
 	err6 := NewWithError(nil, "some %s", "a")
 	err6.WithNestedError(nil)
 	assert.Nil(t, err6.NestedError)
-	assert.Equal(t, err6.Code, NoErrorCode)
+	assert.Equal(t, err6.Code, GenericErrorCode)
 }

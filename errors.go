@@ -55,7 +55,7 @@ func NewErrorCode(name string, value int, httpCode int) ErrorCode {
 
 // New creates a error based on messages
 func New(format string, messages ...interface{}) E {
-	return newWithCallerDepth(caller.TwoHopsCallerDepth, NoErrorCode, format, messages...)
+	return newWithCallerDepth(caller.TwoHopsCallerDepth, GenericErrorCode, format, messages...)
 }
 
 // NewWithoutStackTrace creates a error based on messages without trace
@@ -68,7 +68,7 @@ func NewWithoutStackTrace(format string, messages ...interface{}) E {
 // NewWithError returns a new error with a nested one. uses the nested error code
 func NewWithError(err error, format string, messages ...interface{}) E {
 	if err == nil {
-		return newWithCallerDepth(caller.TwoHopsCallerDepth, NoErrorCode, format, messages...)
+		return newWithCallerDepth(caller.TwoHopsCallerDepth, GenericErrorCode, format, messages...)
 	}
 
 	castedErr, ok := err.(E)
@@ -116,7 +116,7 @@ func NewValidationFailure(field string, rule string, message string) E {
 
 // Error implements the error interface
 func (e *Error) Error() string {
-	if e.Code == NoErrorCode {
+	if e.Code == GenericErrorCode {
 		return e.Message
 	}
 
@@ -176,16 +176,16 @@ func (ec *ErrorCode) UnmarshalJSON(data []byte) error {
 	codeParts := strings.Split(mErr, "-")
 	if len(codeParts) != 2 {
 		logger.Logger.Warn("unable to parse error code for %s. using default", mErr)
-		ec.Name = NoErrorCode.Name
-		ec.Value = NoErrorCode.Value
+		ec.Name = GenericErrorCode.Name
+		ec.Value = GenericErrorCode.Value
 		return nil
 	}
 
 	value, err := strconv.ParseInt(codeParts[1], 10, 64)
 	if err != nil {
 		logger.Logger.Warn("unable to parse error code for %s. using default", mErr)
-		ec.Name = NoErrorCode.Name
-		ec.Value = NoErrorCode.Value
+		ec.Name = GenericErrorCode.Name
+		ec.Value = GenericErrorCode.Value
 		return nil
 	}
 
