@@ -32,7 +32,7 @@ type Error struct {
 
 // StackTrace trace from debug.Stack with Caller information
 type StackTrace struct {
-	Trace      string `json:"trace"`
+	Trace      []byte `json:"trace"`
 	CallerPath string `json:"caller,omitempty"`
 }
 
@@ -85,7 +85,7 @@ func newWithCallerDepth(depth caller.Depth, code ErrorCode, format string, messa
 	var st *StackTrace = nil
 	if env.IsDebugActive() {
 		st = &StackTrace{
-			Trace:      string(debug.Stack()),
+			Trace:      debug.Stack(),
 			CallerPath: caller.NewCaller(depth).String(),
 		}
 	}
