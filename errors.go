@@ -135,8 +135,8 @@ func (e *Error) GetHTTPStatus() int {
 }
 
 // WithNestedError add new error to current one, ignores the nested error code
-func (e *Error) WithNestedError(err error) E {
-	if err == nil {
+func (e *Error) WithNestedError(errors ...error) E {
+	if len(errors) == 0 {
 		return e
 	}
 
@@ -144,12 +144,19 @@ func (e *Error) WithNestedError(err error) E {
 		e.NestedError = []*Error{}
 	}
 
-	errToAppend, ok := err.(E)
-	if !ok {
-		errToAppend = New(err.Error())
+	for _, err := range errors {
+		if err == nil {
+			continue
+		}
+
+		errToAppend, ok := err.(E)
+		if !ok {
+			errToAppend = New(err.Error())
+		}
+
+		e.NestedError = append(e.NestedError, errToAppend)
 	}
 
-	e.NestedError = append(e.NestedError, errToAppend)
 	return e
 }
 
