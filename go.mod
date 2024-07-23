@@ -3,9 +3,9 @@ module github.com/pixie-sh/errors-go
 go 1.22
 
 require (
-	github.com/pixie-sh/logger-go v0.1.2
+	github.com/pixie-sh/logger-go v0.1.10
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.21.0
+	golang.org/x/crypto v0.23.0
 )
 
 require (

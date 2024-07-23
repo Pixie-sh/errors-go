@@ -2,6 +2,7 @@ package errors
 
 import (
 	"encoding/json"
+	goErrors "errors"
 	"fmt"
 	"github.com/pixie-sh/logger-go/caller"
 	"github.com/pixie-sh/logger-go/env"
@@ -44,6 +45,26 @@ type FieldError struct {
 	Message string `json:"message"`
 }
 
+func As(err error) (E, bool) {
+	var e E
+
+	switch {
+	case goErrors.As(err, &e):
+		return e, true
+	}
+
+	return nil, false
+}
+
+func Has(err error, ec ErrorCode) (E, bool) {
+	e, valid := As(err)
+	if valid && e.Code == ec {
+		return e, true
+	}
+
+	return nil, false
+}
+
 // NewErrorCode returns an ErrorCode
 func NewErrorCode(name string, value int, httpCode int) ErrorCode {
 	return ErrorCode{
@@ -71,7 +92,7 @@ func NewWithError(err error, format string, messages ...interface{}) E {
 		return newWithCallerDepth(caller.TwoHopsCallerDepth, GenericErrorCode, format, messages...)
 	}
 
-	castedErr, ok := err.(E)
+	castedErr, ok := As(err)
 	code := UnknownErrorCode
 	if ok {
 		code = castedErr.Code
@@ -97,21 +118,13 @@ func newWithCallerDepth(depth caller.Depth, code ErrorCode, format string, messa
 	}
 }
 
-// NewValidationFailure returns an error formatted with validations errors
-func NewValidationFailure(field string, rule string, message string) E {
-	errorResult := new(Error)
-
+// NewValidationError returns an error formatted with validations errors
+func NewValidationError(message string, fields ...*FieldError) E {
+	var errorResult Error
 	errorResult.Code = InvalidFormDataCode
-	errorResult.Message = "Invalid form sent."
-
-	failure := new(FieldError)
-	failure.Rule = rule
-	failure.Field = field
-	failure.Message = message
-
-	errorResult.FieldErrors = append(errorResult.FieldErrors, failure)
-
-	return errorResult
+	errorResult.Message = message
+	errorResult.FieldErrors = fields
+	return &errorResult
 }
 
 // Error implements the error interface
@@ -120,7 +133,7 @@ func (e *Error) Error() string {
 		return e.Message
 	}
 
-	return e.Code.String()
+	return fmt.Sprintf("%s: %s", e.Code.String(), e.Message)
 }
 
 // JSON return a json string

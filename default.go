@@ -1,5 +1,9 @@
 package errors
 
+import (
+	"net/http"
+)
+
 // http return codes
 const (
 	HTTPSuccess                = 200 // Standard OK response.
@@ -17,16 +21,29 @@ const (
 
 // Errors 40000
 var (
-	SystemClientErrorCodeBase       = 40000
-	InvalidFormDataCode             = NewErrorCode("InvalidFormDataError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
-	NotFoundErrorCode               = NewErrorCode("NotFoundError", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
-	TooManyAttemptsErrorCode        = NewErrorCode("TooManyAttemptsError", SystemClientErrorCodeBase+HTTPThrottling, HTTPThrottling)
-	UnauthorizedErrorCode           = NewErrorCode("UnauthorizedError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
-	ForbiddenErrorCode              = NewErrorCode("ForbiddenError", SystemClientErrorCodeBase+HTTPEndpointForbidden, HTTPEndpointForbidden)
-	InvalidJWTErrorCode             = NewErrorCode("InvalidJWTError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
-	InvalidAuthTokenErrorCode       = NewErrorCode("InvalidAuthTokenError", SystemClientErrorCodeBase+HTTPSecurityKeyMissing, HTTPSecurityKeyMissing)
-	ErrorPerformingRequestErrorCode = NewErrorCode("ErrorPerformingRequestError", SystemClientErrorCodeBase+HTTPBadRequest, HTTPBadRequest)
-	ErrorUnmarshallBodyErrorCode    = NewErrorCode("ErrorUnmarshallBodyError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	SystemClientErrorCodeBase           = 40000
+	InvalidFormDataCode                 = NewErrorCode("InvalidFormDataError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	NotFoundErrorCode                   = NewErrorCode("NotFoundError", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
+	TooManyAttemptsErrorCode            = NewErrorCode("TooManyAttemptsError", SystemClientErrorCodeBase+HTTPThrottling, HTTPThrottling)
+	UnauthorizedErrorCode               = NewErrorCode("UnauthorizedError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
+	ForbiddenErrorCode                  = NewErrorCode("ForbiddenError", SystemClientErrorCodeBase+HTTPEndpointForbidden, HTTPEndpointForbidden)
+	InvalidJWTErrorCode                 = NewErrorCode("InvalidJWTError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
+	InvalidAuthTokenErrorCode           = NewErrorCode("InvalidAuthTokenError", SystemClientErrorCodeBase+HTTPSecurityKeyMissing, HTTPSecurityKeyMissing)
+	ErrorPerformingRequestErrorCode     = NewErrorCode("ErrorPerformingRequestError", SystemClientErrorCodeBase+HTTPBadRequest, HTTPBadRequest)
+	ErrorUnmarshallBodyErrorCode        = NewErrorCode("ErrorUnmarshallBodyError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	EntityNotFoundErrorCode             = NewErrorCode("EntityNotFoundErrorCode", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
+	UserNotFoundErrorCode               = NewErrorCode("UserNotFoundErrorCode", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
+	UserNotActiveErrorCode              = NewErrorCode("UserNotActiveErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	SessionChannelNotSupportedErrorCode = NewErrorCode("SessionChannelNotSupportedErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	APIValidationErrorCode              = NewErrorCode("APIValidationErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+)
+
+var (
+	WebsocketErrorCode   = 55000
+	ServerErrorErrorCode = NewErrorCode("ServerErrorErrorCode", WebsocketErrorCode+http.StatusInternalServerError, http.StatusInternalServerError)
+	ConnectionNotActive  = NewErrorCode("ConnectionNotActive", WebsocketErrorCode+http.StatusGone, http.StatusGone)
+	ProducerErrorCode    = NewErrorCode("ProducerErrorCode", WebsocketErrorCode+http.StatusServiceUnavailable, http.StatusServiceUnavailable)
+	RateLimitErrorCode   = NewErrorCode("RateLimitErrorCode", WebsocketErrorCode+http.StatusForbidden, http.StatusForbidden)
 )
 
 // Errors 50000
@@ -40,6 +57,9 @@ var (
 	InvalidCtxMetricErrorCode            = NewErrorCode("InvalidCtxMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
 	ErrorCreatingMetricErrorCode         = NewErrorCode("ErrorCreatingMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
 	EventSourceMappingDontExistErrorCode = NewErrorCode("EventSourceMappingDontExistError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+
+	LambdaInitFailedErrorCode = NewErrorCode("LambdaInitFailedErrorCode", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	LambdaPanicErrorCode      = NewErrorCode("LambdaPanicErrorCode", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
 )
 
 // Generic Errors

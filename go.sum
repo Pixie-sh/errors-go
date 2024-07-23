@@ -6,6 +6,8 @@ github.com/pixie-sh/logger-go v0.1.0 h1:isla+9BaO3N9D9J66YK0ZtEoEPjgboqbiLupIkrU
 github.com/pixie-sh/logger-go v0.1.0/go.mod h1:jBmfYcV49CrvJorRDTSuFPpoSDBWqbtnVlDiJ8/2eVE=
 github.com/pixie-sh/logger-go v0.1.2 h1:LMmyu6WoU96Abqs+TMte88M7TH0LTFmTmy2LC3fE3zI=
 github.com/pixie-sh/logger-go v0.1.2/go.mod h1:jBmfYcV49CrvJorRDTSuFPpoSDBWqbtnVlDiJ8/2eVE=
+github.com/pixie-sh/logger-go v0.1.10 h1:iSV+zuEFNB9H7A0kLlaobpZ1gky89xXylhQW0oprKzg=
+github.com/pixie-sh/logger-go v0.1.10/go.mod h1:jBmfYcV49CrvJorRDTSuFPpoSDBWqbtnVlDiJ8/2eVE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
@@ -16,6 +18,7 @@ golang.org/x/crypto v0.19.0 h1:ENy+Az/9Y1vSrlrvBSyna3PITt4tiZLf7sgCjZBX7Wo=
 golang.org/x/crypto v0.19.0/go.mod h1:Iy9bg/ha4yyC70EfRS8jz+B6ybOBKMaSxLj6P6oBDfU=
 golang.org/x/crypto v0.21.0 h1:X31++rzVUdKhX5sWmSOFZxx8UW/ldWx55cbf08iNAMA=
 golang.org/x/crypto v0.21.0/go.mod h1:0BP7YvVV9gBbVKyeTG0Gyn+gZm94bibOW5BjDEYAOMs=
+golang.org/x/crypto v0.23.0/go.mod h1:CKFgDieR+mRhux2Lsu27y0fO304Db0wZe70UKqHu0v8=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
