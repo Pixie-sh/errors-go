@@ -79,3 +79,17 @@ func TestErrors(t *testing.T) {
 	assert.Empty(t, err6.NestedError)
 	assert.Equal(t, err6.Code, GenericErrorCode)
 }
+
+func TestErrorAs(t *testing.T) {
+	var e error
+	e = NewValidationError("test")
+
+	err, ok := As(e)
+	assert.True(t, ok)
+	assert.NotNil(t, err)
+
+	err, ok = Has(e, InvalidFormDataCode)
+	assert.True(t, ok)
+	assert.NotNil(t, err)
+
+}
