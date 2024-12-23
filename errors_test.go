@@ -43,9 +43,9 @@ func TestErrors(t *testing.T) {
 	assert.Equal(t, "test message #2", err2.Message)
 	assert.Equal(t, "test message #3", err3.Message)
 
-	assert.Equal(t, "TEST-1", err3.Error())
-	assert.Equal(t, "TEST-1", err1.Error())
-	assert.Equal(t, "TEST-2", err2.Error())
+	assert.Equal(t, "TEST-1: test message #3", err3.Error())
+	assert.Equal(t, "TEST-1: test message #1", err1.Error())
+	assert.Equal(t, "TEST-2: test message #2", err2.Error())
 
 	os.Setenv(env.DebugMode, "true")
 	err4 := New("test %s", "message #4").WithErrorCode(errCode2)

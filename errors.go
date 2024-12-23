@@ -12,6 +12,18 @@ import (
 	"strings"
 )
 
+// Depth caller depth type
+type Depth = int
+
+// most used depth for caller
+const (
+	SelfCallerDepth      Depth = 1
+	FnCallerDepth        Depth = 2
+	TwoHopsCallerDepth   Depth = 3
+	ThreeHopsCallerDepth Depth = 4
+	FourHopsCallerDepth  Depth = 5
+)
+
 // ErrorCode error code used by Error to specify some known error
 type ErrorCode struct {
 	Name      string `json:"name"`
@@ -22,7 +34,7 @@ type ErrorCode struct {
 // E Error pointer
 type E = *Error
 
-// Error error struct to be used
+// Error struct to be used
 type Error struct {
 	Code        ErrorCode     `json:"code"`
 	Message     string        `json:"message,omitempty"`
@@ -76,20 +88,21 @@ func NewErrorCode(name string, value int, httpCode int) ErrorCode {
 
 // New creates a error based on messages
 func New(format string, messages ...interface{}) E {
-	return newWithCallerDepth(caller.TwoHopsCallerDepth, GenericErrorCode, format, messages...)
+	return newWithCallerDepth(TwoHopsCallerDepth, GenericErrorCode, format, messages...)
 }
 
 // NewWithoutStackTrace creates a error based on messages without trace
 func NewWithoutStackTrace(format string, messages ...interface{}) E {
 	return &Error{
 		Message: fmt.Sprintf(format, messages...),
+		Code: GenericErrorCode,
 	}
 }
 
 // NewWithError returns a new error with a nested one. uses the nested error code
 func NewWithError(err error, format string, messages ...interface{}) E {
 	if err == nil {
-		return newWithCallerDepth(caller.TwoHopsCallerDepth, GenericErrorCode, format, messages...)
+		return newWithCallerDepth(TwoHopsCallerDepth, GenericErrorCode, format, messages...)
 	}
 
 	castedErr, ok := As(err)
@@ -98,11 +111,16 @@ func NewWithError(err error, format string, messages ...interface{}) E {
 		code = castedErr.Code
 	}
 
-	err2 := newWithCallerDepth(caller.TwoHopsCallerDepth, code, format, messages...)
+	err2 := newWithCallerDepth(TwoHopsCallerDepth, code, format, messages...)
 	return err2.WithNestedError(err)
 }
 
-func newWithCallerDepth(depth caller.Depth, code ErrorCode, format string, messages ...interface{}) E {
+// NewWithCallerDepth returns a new error with caller depth
+func NewWithCallerDepth(depth Depth, format string, messages ...interface{}) E {
+	return newWithCallerDepth(depth, GenericErrorCode, format, messages...)
+}
+
+func newWithCallerDepth(depth Depth, code ErrorCode, format string, messages ...interface{}) E {
 	var st *StackTrace = nil
 	if env.IsDebugActive() {
 		st = &StackTrace{
