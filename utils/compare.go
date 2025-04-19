@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -19,13 +18,6 @@ func Nil(i interface{}) bool {
 	}
 
 	return false
-}
-
-// Must validate error, panic if error
-func Must(err error, format string, attr ...interface{}) {
-	if err != nil {
-		panic(fmt.Sprintf(format+": %v", append(attr, err)...))
-	}
 }
 
 // IsPointer validates if input is pointer

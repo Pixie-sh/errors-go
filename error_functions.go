@@ -3,6 +3,7 @@ package errors
 import (
 	goErrors "errors"
 	"github.com/pixie-sh/errors-go/utils"
+	"github.com/pixie-sh/logger-go/structs"
 	"strings"
 )
 
@@ -22,7 +23,12 @@ func Must(err error) {
 	if err != nil {
 		e, ok := As(err)
 		if ok {
-			panic(e)
+			j, jerr := e.MarshalJSON()
+			if jerr != nil {
+				panic(e)
+			}
+
+			panic(*structs.UnsafeString(j))
 		}
 
 		panic(err)
@@ -48,7 +54,7 @@ func Has(err error, ec ErrorCode, evalNested ...bool) (E, bool) {
 	if valid && e.Code == ec {
 		return e, true
 	}
-	
+
 	if valid && e.Code == JoinedErrorCode && len(evalNested) > 0 && evalNested[0] {
 		for _, nestedErr := range e.NestedError {
 			nestedE, nestedOk := Has(nestedErr, ec)
@@ -109,7 +115,7 @@ func Join(errs ...error) error {
 	}
 
 	baseErr := &Error{
-		Code: JoinedErrorCode,
+		Code:        JoinedErrorCode,
 		NestedError: make([]error, 0),
 	}
 
@@ -206,3 +212,4 @@ func mapSlice[S ~[]E, E any, R any](model S, f func(item E) R) []R {
 
 	return result
 }
+

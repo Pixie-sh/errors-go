@@ -82,7 +82,6 @@ func (e Error) Unwrap() error {
 	return e.NestedError[0]
 }
 
-
 func (e Error) MarshalJSON() ([]byte, error) {
 	// Create a custom type for marshaling that won't trigger the MarshalJSON method recursively
 	type AliasError struct {
