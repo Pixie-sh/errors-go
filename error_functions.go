@@ -3,6 +3,7 @@ package errors
 import (
 	goErrors "errors"
 	"github.com/pixie-sh/errors-go/utils"
+	"strings"
 )
 
 // New Package errors provides utility methods and custom error handling mechanisms,
@@ -107,15 +108,26 @@ func Join(errs ...error) error {
 		return errs[0]
 	}
 
-	var baseErr = &Error{
+	baseErr := &Error{
 		Code: JoinedErrorCode,
 		NestedError: make([]error, 0),
 	}
 
+	messageBuilder := strings.Builder{}
 	for i := 0; i < len(errs); {
 		if errs[i] == nil {
 			errs = append(errs[:i], errs[i+1:]...)
 			continue
+		}
+
+		if i == 0 {
+			messageBuilder.WriteString("[")
+		}
+		messageBuilder.WriteString(errs[i].Error())
+		if i < len(errs)-1 {
+			messageBuilder.WriteString("; ")
+		} else {
+			messageBuilder.WriteString("]")
 		}
 
 		baseErr.NestedError = append(baseErr.NestedError, errs[i])
@@ -130,6 +142,7 @@ func Join(errs ...error) error {
 		return baseErr.NestedError[0]
 	}
 
+	baseErr.Message = messageBuilder.String()
 	return baseErr
 }
 

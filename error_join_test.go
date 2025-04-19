@@ -38,6 +38,7 @@ func TestJoin(t *testing.T) {
 		e, ok := As(joinedErr)
 		assert.True(t, ok)
 		assert.Equal(t, JoinedErrorCode, e.Code)
+		assert.Equal(t, "JoinedError-50300: [UnknownError-50500: error 1; UnknownError-50500: error 2]", e.Error())
 
 		// Check the nested errors
 		assert.Len(t, e.NestedError, 2)

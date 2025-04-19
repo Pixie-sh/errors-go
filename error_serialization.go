@@ -67,6 +67,22 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%s: %s", e.Code.String(), e.Message)
 }
 
+// String implements Stringer interface
+func (e Error) String() string {
+	return e.Error()
+}
+
+// Unwrap only returns the first NestedError
+// which is the most common use case
+func (e Error) Unwrap() error {
+	if len(e.NestedError) == 0 {
+		return nil
+	}
+
+	return e.NestedError[0]
+}
+
+
 func (e Error) MarshalJSON() ([]byte, error) {
 	// Create a custom type for marshaling that won't trigger the MarshalJSON method recursively
 	type AliasError struct {
