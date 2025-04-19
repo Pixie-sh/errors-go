@@ -1,10 +1,7 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/pixie-sh/errors-go"
-	"os"
 	"reflect"
 )
 
@@ -27,16 +24,7 @@ func Nil(i interface{}) bool {
 // Must validate error, panic if error
 func Must(err error, format string, attr ...interface{}) {
 	if err != nil {
-		errStr := err.Error()
-
-		castedErr, ok := err.(errors.E)
-		if ok {
-			blob, _ := json.Marshal(castedErr)
-			errStr = string(blob)
-		}
-
-		fmt.Fprintf(os.Stderr, "%s\n %s", fmt.Sprintf(format, attr...), errStr)
-		os.Exit(1)
+		panic(fmt.Sprintf(format+": %v", append(attr, err)...))
 	}
 }
 

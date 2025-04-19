@@ -21,51 +21,65 @@ const (
 
 // Errors 40000
 var (
-	SystemClientErrorCodeBase           = 40000
-	InvalidFormDataCode                 = NewErrorCode("InvalidFormDataError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
-	NotFoundErrorCode                   = NewErrorCode("NotFoundError", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
-	TooManyAttemptsErrorCode            = NewErrorCode("TooManyAttemptsError", SystemClientErrorCodeBase+HTTPThrottling, HTTPThrottling)
-	UnauthorizedErrorCode               = NewErrorCode("UnauthorizedError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
-	ForbiddenErrorCode                  = NewErrorCode("ForbiddenError", SystemClientErrorCodeBase+HTTPEndpointForbidden, HTTPEndpointForbidden)
-	InvalidJWTErrorCode                 = NewErrorCode("InvalidJWTError", SystemClientErrorCodeBase+HTTPNotAuthenticated, HTTPNotAuthenticated)
-	InvalidAuthTokenErrorCode           = NewErrorCode("InvalidAuthTokenError", SystemClientErrorCodeBase+HTTPSecurityKeyMissing, HTTPSecurityKeyMissing)
-	ErrorPerformingRequestErrorCode     = NewErrorCode("ErrorPerformingRequestError", SystemClientErrorCodeBase+HTTPBadRequest, HTTPBadRequest)
-	ErrorUnmarshallBodyErrorCode        = NewErrorCode("ErrorUnmarshallBodyError", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
-	EntityNotFoundErrorCode             = NewErrorCode("EntityNotFoundErrorCode", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
-	UserNotFoundErrorCode               = NewErrorCode("UserNotFoundErrorCode", SystemClientErrorCodeBase+HTTPNotFound, HTTPNotFound)
-	UserNotActiveErrorCode              = NewErrorCode("UserNotActiveErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
-	SessionChannelNotSupportedErrorCode = NewErrorCode("SessionChannelNotSupportedErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
-	APIValidationErrorCode              = NewErrorCode("APIValidationErrorCode", SystemClientErrorCodeBase+HTTPInvalidData, HTTPInvalidData)
+	UserInputErrorCode                    = 40000
+	InvalidFormDataCode                   = NewErrorCode("InvalidFormDataError", UserInputErrorCode+HTTPInvalidData)
+	NotFoundErrorCode                     = NewErrorCode("NotFoundError", UserInputErrorCode+HTTPNotFound)
+	TooManyAttemptsErrorCode              = NewErrorCode("TooManyAttemptsError", UserInputErrorCode+HTTPThrottling)
+	UnauthorizedErrorCode                 = NewErrorCode("UnauthorizedError", UserInputErrorCode+HTTPNotAuthenticated)
+	ForbiddenErrorCode                    = NewErrorCode("ForbiddenError", UserInputErrorCode+HTTPEndpointForbidden)
+	InvalidJWTErrorCode                   = NewErrorCode("InvalidJWTError", UserInputErrorCode+HTTPNotAuthenticated)
+	InvalidAuthTokenErrorCode             = NewErrorCode("InvalidAuthTokenError", UserInputErrorCode+HTTPSecurityKeyMissing)
+	ErrorPerformingRequestErrorCode       = NewErrorCode("ErrorPerformingRequestError", UserInputErrorCode+HTTPBadRequest)
+	ErrorUnmarshallBodyErrorCode          = NewErrorCode("ErrorUnmarshallBodyError", UserInputErrorCode+HTTPInvalidData)
+	EntityNotFoundErrorCode               = NewErrorCode("EntityNotFoundErrorCode", UserInputErrorCode+HTTPNotFound)
+	UserNotFoundErrorCode                 = NewErrorCode("UserNotFoundErrorCode", UserInputErrorCode+HTTPNotFound)
+	UserNotActiveErrorCode                = NewErrorCode("UserNotActiveErrorCode", UserInputErrorCode+HTTPInvalidData)
+	SessionChannelNotSupportedErrorCode   = NewErrorCode("SessionChannelNotSupportedErrorCode", UserInputErrorCode+HTTPInvalidData)
+	APIValidationErrorCode                = NewErrorCode("APIValidationErrorCode", UserInputErrorCode+HTTPInvalidData)
+	EntitiesInactiveUnauthorizedErrorCode = NewErrorCode("EntitiesInactiveUnauthorizedErrorCode", UserInputErrorCode+HTTPNotAuthenticated)
 )
 
 var (
-	WebsocketErrorCode   = 55000
-	ServerErrorErrorCode = NewErrorCode("ServerErrorErrorCode", WebsocketErrorCode+http.StatusInternalServerError, http.StatusInternalServerError)
-	ConnectionNotActive  = NewErrorCode("ConnectionNotActive", WebsocketErrorCode+http.StatusGone, http.StatusGone)
-	ProducerErrorCode    = NewErrorCode("ProducerErrorCode", WebsocketErrorCode+http.StatusServiceUnavailable, http.StatusServiceUnavailable)
-	RateLimitErrorCode   = NewErrorCode("RateLimitErrorCode", WebsocketErrorCode+http.StatusForbidden, http.StatusForbidden)
+	StreamsErrorCode                   = 55000
+	ServerErrorErrorCode               = NewErrorCode("ServerErrorErrorCode", StreamsErrorCode+http.StatusInternalServerError)
+	ConnectionNotActive                = NewErrorCode("ConnectionNotActive", StreamsErrorCode+http.StatusGone)
+	ProducerErrorCode                  = NewErrorCode("ProducerErrorCode", StreamsErrorCode+http.StatusServiceUnavailable)
+	RateLimitErrorCode                 = NewErrorCode("RateLimitErrorCode", StreamsErrorCode+http.StatusForbidden)
+	ProcessFailedDoNotRequeueErrorCode = NewErrorCode("ProcessFailedDoNotRequeueErrorCode", StreamsErrorCode+HTTPServerError)
+	InvalidScopeRequeueErrorCode       = NewErrorCode("InvalidScopeRequeueErrorCode", StreamsErrorCode+HTTPServerError)
+	InvalidRecordsListErrorCode        = NewErrorCode("InvalidRecordsListErrorCode", StreamsErrorCode+HTTPServerError)
 )
 
-// Errors 50000
 var (
-	SystemSystemErrorCodeBase            = 50000
-	FailedToWriteDataErrorCode           = NewErrorCode("FailedToWriteDataError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	FailedToReadDataErrorCode            = NewErrorCode("FailedToReadDataError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	DBErrorCode                          = NewErrorCode("DBError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	UnknownErrorCode                     = NewErrorCode("UnknownError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	InvalidProcessHandlerErrorCode       = NewErrorCode("InvalidProcessHandlerError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	InvalidCtxMetricErrorCode            = NewErrorCode("InvalidCtxMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	ErrorCreatingMetricErrorCode         = NewErrorCode("ErrorCreatingMetricError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	EventSourceMappingDontExistErrorCode = NewErrorCode("EventSourceMappingDontExistError", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-
-	LambdaInitFailedErrorCode = NewErrorCode("LambdaInitFailedErrorCode", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
-	LambdaPanicErrorCode      = NewErrorCode("LambdaPanicErrorCode", SystemSystemErrorCodeBase+HTTPServerError, HTTPServerError)
+	SystemErrorCode                      = 50000
+	JoinedErrorCode                      = NewErrorCode("JoinedError", SystemErrorCode+http.StatusMultipleChoices)
+	FailedToWriteDataErrorCode           = NewErrorCode("FailedToWriteDataError", SystemErrorCode+HTTPServerError)
+	FailedToReadDataErrorCode            = NewErrorCode("FailedToReadDataError", SystemErrorCode+HTTPServerError)
+	DBErrorCode                          = NewErrorCode("DBError", SystemErrorCode+HTTPServerError)
+	UnknownErrorCode                     = NewErrorCode("UnknownError", SystemErrorCode+HTTPServerError)
+	InvalidProcessHandlerErrorCode       = NewErrorCode("InvalidProcessHandlerError", SystemErrorCode+HTTPServerError)
+	InvalidCtxMetricErrorCode            = NewErrorCode("InvalidCtxMetricError", SystemErrorCode+HTTPServerError)
+	ErrorCreatingMetricErrorCode         = NewErrorCode("ErrorCreatingMetricError", SystemErrorCode+HTTPServerError)
+	EventSourceMappingDontExistErrorCode = NewErrorCode("EventSourceMappingDontExistError", SystemErrorCode+HTTPServerError)
+	LambdaInitFailedErrorCode            = NewErrorCode("LambdaInitFailedErrorCode", SystemErrorCode+HTTPServerError)
+	LambdaPanicErrorCode                 = NewErrorCode("LambdaPanicErrorCode", SystemErrorCode+HTTPServerError)
+	FailedToAcquireLockErrorCode         = NewErrorCode("FailedToAcquireLockErrorCode", SystemErrorCode+HTTPServerError)
+	NoRetryErrorCode                     = NewErrorCode("NoRetryErrorCode", SystemErrorCode+HTTPServerError)
+	InvalidTypeErrorCode                 = NewErrorCode("InvalidTypeErrorCode", SystemErrorCode+HTTPServerError)
 )
 
 // Generic Errors
 var (
 	SystemNoCodeCodeBase              = 90000
-	GenericErrorCode                  = NewErrorCode("GenericErrorCode", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
-	ErrorCreatingDependencyErrorCode  = NewErrorCode("ErrorCreatingDependencyError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
-	ErrorLoadingStructConsulErrorCode = NewErrorCode("ErrorLoadingStructConsulError", SystemNoCodeCodeBase+HTTPServerError, HTTPServerError)
+	GenericErrorCode                  = NewErrorCode("GenericErrorCode", SystemNoCodeCodeBase+HTTPServerError)
+	ErrorCreatingDependencyErrorCode  = NewErrorCode("ErrorCreatingDependencyError", SystemNoCodeCodeBase+HTTPServerError)
+	ErrorLoadingStructConsulErrorCode = NewErrorCode("ErrorLoadingStructConsulError", SystemNoCodeCodeBase+HTTPServerError)
+)
+
+// State Machine errors
+var (
+	StateMachineErrorCode                  = 60000
+	StateMachineInvalidTransitionErrorCode = NewErrorCode("StateMachineInvalidTransitionErrorCode", StateMachineErrorCode+HTTPEndpointForbidden)
+	StateMachineInvalidStateErrorCode      = NewErrorCode("StateMachineInvalidStateErrorCode", StateMachineErrorCode+HTTPInvalidData)
+	StateMachineStateNotVisitedErrorCode   = NewErrorCode("StateMachineStateNotVisitedErrorCode", StateMachineErrorCode+HTTPEndpointForbidden)
 )
