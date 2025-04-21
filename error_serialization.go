@@ -60,11 +60,22 @@ func (ec ErrorCode) String() string {
 
 // Error implements the error interface
 func (e Error) Error() string {
-	if e.Code == GenericErrorCode {
-		return e.Message
+	var ecStr = e.Code.String() + " "
+	if e.Code == GenericErrorCode || e.Code == UnknownErrorCode {
+		ecStr = ""
 	}
 
-	return fmt.Sprintf("%s: %s", e.Code.String(), e.Message)
+	if len(e.NestedError) == 0 {
+		return fmt.Sprintf("%s%s", ecStr, e.Message)
+	}
+
+	errStr := strings.Builder{}
+	errStr.WriteString(fmt.Sprintf("%s%s", ecStr, e.Message))
+	for _, err := range e.NestedError {
+		errStr.WriteString(fmt.Sprintf("; %s", err.Error()))
+	}
+
+	return errStr.String()
 }
 
 // String implements Stringer interface
