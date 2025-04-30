@@ -17,6 +17,7 @@ const (
 	HTTPThrottling             = 429 // Too Many Attempts.
 	HTTPServerError            = 500 // Unexpected error. Check ELK logs for the stack error.
 	HTTPIncompleteRegistration = 501 // Uncompleted registration process.
+	HTTPConflict               = 409 // Conflict
 )
 
 // Errors 40000
@@ -31,12 +32,37 @@ var (
 	InvalidAuthTokenErrorCode             = NewErrorCode("InvalidAuthTokenError", UserInputErrorCode+HTTPSecurityKeyMissing)
 	ErrorPerformingRequestErrorCode       = NewErrorCode("ErrorPerformingRequestError", UserInputErrorCode+HTTPBadRequest)
 	ErrorUnmarshallBodyErrorCode          = NewErrorCode("ErrorUnmarshallBodyError", UserInputErrorCode+HTTPInvalidData)
-	EntityNotFoundErrorCode               = NewErrorCode("EntityNotFoundErrorCode", UserInputErrorCode+HTTPNotFound)
 	UserNotFoundErrorCode                 = NewErrorCode("UserNotFoundErrorCode", UserInputErrorCode+HTTPNotFound)
 	UserNotActiveErrorCode                = NewErrorCode("UserNotActiveErrorCode", UserInputErrorCode+HTTPInvalidData)
 	SessionChannelNotSupportedErrorCode   = NewErrorCode("SessionChannelNotSupportedErrorCode", UserInputErrorCode+HTTPInvalidData)
 	APIValidationErrorCode                = NewErrorCode("APIValidationErrorCode", UserInputErrorCode+HTTPInvalidData)
 	EntitiesInactiveUnauthorizedErrorCode = NewErrorCode("EntitiesInactiveUnauthorizedErrorCode", UserInputErrorCode+HTTPNotAuthenticated)
+
+	//database error codes
+	//
+
+	EntityNotFoundErrorCode                      = NewErrorCode("EntityNotFoundErrorCode", UserInputErrorCode+HTTPNotFound)
+	EntityModelValueRequiredErrorCode            = NewErrorCode("EntityModelValueRequiredErrorCode", UserInputErrorCode+HTTPBadRequest)
+	EntityModelAccessibleFieldsRequiredErrorCode = NewErrorCode("EntityModelAccessibleFieldsRequiredErrorCode", UserInputErrorCode+HTTPBadRequest)
+	EntityEmptySliceErrorCode                    = NewErrorCode("EntityEmptySliceErrorCode", UserInputErrorCode+HTTPBadRequest)
+	EntityForeignKeyViolatedErrorCode            = NewErrorCode("EntityForeignKeyViolatedErrorCode", UserInputErrorCode+HTTPConflict)
+	QueryMissingWhereClauseErrorCode             = NewErrorCode("QueryMissingWhereClauseErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryUnsupportedRelationErrorCode            = NewErrorCode("QueryUnsupportedRelationErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryPrimaryKeyRequiredErrorCode             = NewErrorCode("QueryPrimaryKeyRequiredErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryInvalidDataErrorCode                    = NewErrorCode("QueryInvalidDataErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryInvalidFieldErrorCode                   = NewErrorCode("QueryInvalidFieldErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryPreloadNotAllowedErrorCode              = NewErrorCode("QueryPreloadNotAllowedErrorCode", UserInputErrorCode+HTTPBadRequest)
+	QueryDuplicatedKeyErrorCode                  = NewErrorCode("QueryDuplicatedKeyErrorCode", UserInputErrorCode+HTTPConflict)
+	QueryCheckConstraintViolatedErrorCode        = NewErrorCode("QueryCheckConstraintViolatedErrorCode", UserInputErrorCode+HTTPConflict)
+	QuerySubQueryRequiredErrorCode               = NewErrorCode("QuerySubQueryRequiredErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBInvalidTransactionErrorCode                = NewErrorCode("DBInvalidTransactionErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBNotImplementedErrorCode                    = NewErrorCode("DBNotImplementedErrorCode", UserInputErrorCode+HTTPIncompleteRegistration)
+	DBUnsupportedDriverErrorCode                 = NewErrorCode("DBUnsupportedDriverErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBRegisteredErrorCode                        = NewErrorCode("DBRegisteredErrorCode", UserInputErrorCode+HTTPConflict)
+	DBDryRunModeUnsupportedErrorCode             = NewErrorCode("DBDryRunModeUnsupportedErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBInvalidDatabaseErrorCode                   = NewErrorCode("DBInvalidDatabaseErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBInvalidValueErrorCode                      = NewErrorCode("DBInvalidValueErrorCode", UserInputErrorCode+HTTPBadRequest)
+	DBInvalidValueOfLengthErrorCode              = NewErrorCode("DBInvalidValueOfLengthErrorCode", UserInputErrorCode+HTTPBadRequest)
 )
 
 var (
