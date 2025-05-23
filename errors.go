@@ -95,7 +95,7 @@ func New(format string, messages ...interface{}) E {
 func NewWithoutStackTrace(format string, messages ...interface{}) E {
 	return &Error{
 		Message: fmt.Sprintf(format, messages...),
-		Code: GenericErrorCode,
+		Code:    GenericErrorCode,
 	}
 }
 
@@ -229,6 +229,7 @@ func (ec *ErrorCode) UnmarshalJSON(data []byte) error {
 
 	ec.Name = codeParts[0]
 	ec.Value = int(value)
+	ec.HTTPError = ec.Value % 1000
 	return nil
 }
 
