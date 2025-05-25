@@ -3,7 +3,6 @@ package errors
 import (
 	goErrors "errors"
 	"github.com/pixie-sh/errors-go/utils"
-	"github.com/pixie-sh/logger-go/structs"
 	"strings"
 )
 
@@ -23,12 +22,7 @@ func Must(err error) {
 	if err != nil {
 		e, ok := As(err)
 		if ok {
-			j, jerr := e.MarshalJSON()
-			if jerr != nil {
-				panic(e)
-			}
-
-			panic(*structs.UnsafeString(j))
+			panic(e)
 		}
 
 		panic(err)
@@ -212,4 +206,3 @@ func mapSlice[S ~[]E, E any, R any](model S, f func(item E) R) []R {
 
 	return result
 }
-
