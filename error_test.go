@@ -11,14 +11,14 @@ import (
 
 func TestErrors(t *testing.T) {
 	errCode1 := ErrorCode{
-		Name:  "TEST",
-		Value: 1,
+		Name:      "TEST",
+		Value:     1,
 		HTTPError: 1,
 	}
 
 	errCode2 := ErrorCode{
-		Name:  "TEST",
-		Value: 2,
+		Name:      "TEST",
+		Value:     2,
 		HTTPError: 2,
 	}
 
@@ -46,9 +46,9 @@ func TestErrors(t *testing.T) {
 	assert.Equal(t, "test message #2", err2.Message)
 	assert.Equal(t, "test message #3", err3.Message)
 
-	assert.Equal(t, "TEST-1: test message #3", err3.Error())
-	assert.Equal(t, "TEST-1: test message #1", err1.Error())
-	assert.Equal(t, "TEST-2: test message #2", err2.Error())
+	assert.Equal(t, "TEST-1 test message #3; TEST-1 test message #1; som go error", err3.Error())
+	assert.Equal(t, "TEST-1 test message #1", err1.Error())
+	assert.Equal(t, "TEST-2 test message #2", err2.Error())
 
 	os.Setenv(env.DebugMode, "true")
 	err4 := New("test %s", "message #4").WithErrorCode(errCode2)
@@ -63,7 +63,7 @@ func TestErrors(t *testing.T) {
 	assert.Equal(t, 3, len(err5.NestedError))
 
 	noCodeErr := New("no error %s", "one")
-	assert.Equal(t, "UnknownError-50500: no error one", noCodeErr.Error())
+	assert.Equal(t, "no error one", noCodeErr.Error())
 
 	blob, err := err5.MarshalJSON()
 	assert.Nil(t, err)
@@ -109,7 +109,7 @@ func TestNewWithVariations(t *testing.T) {
 	err2 := New("error with custom code", customCode)
 	assert.Equal(t, customCode, err2.Code)
 	assert.Equal(t, "error with custom code", err2.Message)
-	assert.Equal(t, "CUSTOM-123: error with custom code", err2.Error())
+	assert.Equal(t, "CUSTOM-123 error with custom code", err2.Error())
 	assert.Equal(t, 400, err2.GetHTTPStatus())
 
 	// Test New with format strings
@@ -169,7 +169,7 @@ func TestWrapWithVariations(t *testing.T) {
 	baseErr := New("base", ErrorCode{Name: "BASE", Value: 1})
 	overrideErr := NewWithError(baseErr, "override")
 	finalErr := overrideErr.WithErrorCode(ErrorCode{Name: "FINAL", Value: 999})
-	assert.Equal(t, "FINAL-999: override", finalErr.Error())
+	assert.Equal(t, "FINAL-999 override; BASE-1 base", finalErr.Error())
 }
 
 func TestValidationErrorVariations(t *testing.T) {

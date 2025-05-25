@@ -51,7 +51,7 @@ func Has(err error, ec ErrorCode, evalNested ...bool) (E, bool) {
 
 	if valid && e.Code == JoinedErrorCode && len(evalNested) > 0 && evalNested[0] {
 		for _, nestedErr := range e.NestedError {
-			nestedE, nestedOk := Has(nestedErr, ec)
+			nestedE, nestedOk := Has(nestedErr, ec, evalNested...)
 			if nestedOk {
 				return nestedE, true
 			}
