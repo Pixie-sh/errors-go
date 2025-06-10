@@ -49,8 +49,8 @@ func TestJoin(t *testing.T) {
 
 func TestHas(t *testing.T) {
 	// Define some test error codes
-	testCode1 := NewErrorCode("TEST_ERROR_1", 10001)
-	testCode2 := NewErrorCode("TEST_ERROR_2", 10002)
+	testCode1 := NewErrorCode("TEST_ERROR_1", 10101)
+	testCode2 := NewErrorCode("TEST_ERROR_2", 10102)
 
 	t.Run("should return false for nil error", func(t *testing.T) {
 		e, ok := Has(nil, testCode1)
@@ -82,13 +82,13 @@ func TestHas(t *testing.T) {
 		e1, ok1 := Has(joinedErr, testCode1, true)
 		assert.True(t, ok1)
 		assert.Equal(t, testCode1, e1.Code)
-		assert.Equal(t, "TEST_ERROR_1-10001 error 1", e1.Error())
+		assert.Equal(t, "TEST_ERROR_1-10101 error 1", e1.Error())
 
 		// Find second error
 		e2, ok2 := Has(joinedErr, testCode2, true)
 		assert.True(t, ok2)
 		assert.Equal(t, testCode2, e2.Code)
-		assert.Equal(t, "TEST_ERROR_2-10002 error 2", e2.Error())
+		assert.Equal(t, "TEST_ERROR_2-10102 error 2", e2.Error())
 	})
 
 	t.Run("should handle deeply nested errors", func(t *testing.T) {
@@ -99,7 +99,7 @@ func TestHas(t *testing.T) {
 		e, ok := Has(outerErr, testCode1, true)
 		assert.True(t, ok)
 		assert.Equal(t, testCode1, e.Code)
-		assert.Equal(t, "TEST_ERROR_1-10001 inner error", e.Error())
+		assert.Equal(t, "TEST_ERROR_1-10101 inner error", e.Error())
 	})
 
 	t.Run("should return false when code not present in joined errors", func(t *testing.T) {

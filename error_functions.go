@@ -3,6 +3,7 @@ package errors
 import (
 	goErrors "errors"
 	"github.com/pixie-sh/errors-go/utils"
+	"net/http"
 	"strings"
 )
 
@@ -63,12 +64,23 @@ func Has(err error, ec ErrorCode, evalNested ...bool) (E, bool) {
 
 // NewErrorCode returns an ErrorCode
 // HttpCode is the last three digits of Value
+// will panic if invalid HTTP Code
 func NewErrorCode(name string, value int) ErrorCode {
 	httpError := value % 1000
 	if httpError < 0 {
 		// Ensure ec.HTTPError always represents the last three digits of ec.Value,
 		// even when ec.Value is negative
 		httpError += 1000
+	}
+
+	if http.StatusText(httpError) == "" {
+		panic(newWithCallerDepth(
+			TwoHopsCallerDepth,
+			ErrorCode{"InvalidErrorCode", 99502, 502},
+			"invalid http error code provided; name: %s, value: %d",
+			name,
+			value,
+		))
 	}
 
 	return ErrorCode{

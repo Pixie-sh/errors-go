@@ -1,8 +1,15 @@
 package errors
 
 import (
+	"github.com/pixie-sh/logger-go/logger"
 	"net/http"
 )
+
+var Logger logger.Interface
+
+func init() {
+	Logger = logger.Logger
+}
 
 // http return codes
 const (

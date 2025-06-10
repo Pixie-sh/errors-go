@@ -7,7 +7,6 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/pixie-sh/logger-go/env"
-	"github.com/pixie-sh/logger-go/logger"
 )
 
 // MarshalJSON implement json marshaller interface
@@ -26,7 +25,7 @@ func (ec *ErrorCode) UnmarshalJSON(data []byte) error {
 
 	codeParts := strings.Split(mErr, "-")
 	if len(codeParts) != 2 {
-		logger.Logger.Warn("unable to parse error code for %s. using default", mErr)
+		Logger.Warn("unable to parse error code for %s. using default %v", mErr, GenericErrorCode)
 		ec.Name = GenericErrorCode.Name
 		ec.Value = GenericErrorCode.Value
 		ec.HTTPError = GenericErrorCode.HTTPError
@@ -35,7 +34,7 @@ func (ec *ErrorCode) UnmarshalJSON(data []byte) error {
 
 	value, err := strconv.ParseInt(codeParts[1], 10, 64)
 	if err != nil {
-		logger.Logger.Warn("unable to parse error code for %s. using default", mErr)
+		Logger.Warn("unable to parse error code for %s. using default %v", mErr, GenericErrorCode)
 		ec.Name = GenericErrorCode.Name
 		ec.Value = GenericErrorCode.Value
 		ec.HTTPError = GenericErrorCode.HTTPError
