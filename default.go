@@ -1,8 +1,9 @@
 package errors
 
 import (
-	"github.com/pixie-sh/logger-go/logger"
 	"net/http"
+
+	"github.com/pixie-sh/logger-go/logger"
 )
 
 var Logger logger.Interface
@@ -44,7 +45,7 @@ var (
 	SessionChannelNotSupportedErrorCode   = NewErrorCode("SessionChannelNotSupportedErrorCode", UserInputErrorCode+HTTPInvalidData)
 	APIValidationErrorCode                = NewErrorCode("APIValidationErrorCode", UserInputErrorCode+HTTPInvalidData)
 	EntitiesInactiveUnauthorizedErrorCode = NewErrorCode("EntitiesInactiveUnauthorizedErrorCode", UserInputErrorCode+HTTPNotAuthenticated)
-
+	EntitiesBlockedUnauthorizedErrorCode  = NewErrorCode("EntitiesBlockedUnauthorizedErrorCode", UserInputErrorCode+HTTPEndpointForbidden)
 	//database error codes
 	//
 
@@ -99,6 +100,8 @@ var (
 	FailedToAcquireLockErrorCode         = NewErrorCode("FailedToAcquireLockErrorCode", SystemErrorCode+HTTPServerError)
 	NoRetryErrorCode                     = NewErrorCode("NoRetryErrorCode", SystemErrorCode+HTTPServerError)
 	InvalidTypeErrorCode                 = NewErrorCode("InvalidTypeErrorCode", SystemErrorCode+HTTPServerError)
+	TemplatePanicErrorCode               = NewErrorCode("TemplatePanicErrorCode", SystemErrorCode+HTTPServerError)
+	TemplateDoNotTriggerErrorCode        = NewErrorCode("TemplateDoNotTriggerErrorCode", SystemErrorCode+HTTPServerError)
 )
 
 // Generic Errors
