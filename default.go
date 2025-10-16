@@ -25,6 +25,7 @@ const (
 	HTTPThrottling             = 429 // Too Many Attempts.
 	HTTPServerError            = 500 // Unexpected error. Check ELK logs for the stack error.
 	HTTPIncompleteRegistration = 501 // Uncompleted registration process.
+	HTTPUpstreamServiceFailure = 502
 	HTTPConflict               = 409 // Conflict
 )
 
@@ -82,6 +83,7 @@ var (
 	ProcessFailedDoNotRequeueErrorCode = NewErrorCode("ProcessFailedDoNotRequeueErrorCode", StreamsErrorCode+HTTPServerError)
 	InvalidScopeRequeueErrorCode       = NewErrorCode("InvalidScopeRequeueErrorCode", StreamsErrorCode+HTTPServerError)
 	InvalidRecordsListErrorCode        = NewErrorCode("InvalidRecordsListErrorCode", StreamsErrorCode+HTTPServerError)
+	ProcessingEventErrorCode           = NewErrorCode("ProcessingEventErrorCode", StreamsErrorCode+HTTPUpstreamServiceFailure)
 )
 
 var (
