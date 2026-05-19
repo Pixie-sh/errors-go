@@ -21,3 +21,20 @@
 go.work
 /.idea/errors-go.iml
 /.idea/modules.xml
+/.opencode
+/.env.example
+/.nvmrc
+/specs
+/AGENTS.md
+/opencode.json
+/tui.json
+/.utcp_config.json
+/CLAUDE.md
+/.mcp.json
+/.claude
+/.codex
+/GEMINI.md
+/.agents
+/.gemini
+# CocoIndex Code (ccc)
+/.cocoindex_code/

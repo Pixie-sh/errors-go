@@ -160,6 +160,7 @@ func Join(errs ...error) error {
 
 func newWithArgs(depth Depth, message string, args ...interface{}) E {
 	var code = UnknownErrorCode
+	var codeProvided bool
 	var fields []*FieldError
 	var toWrap error
 
@@ -172,6 +173,7 @@ func newWithArgs(depth Depth, message string, args ...interface{}) E {
 		switch v := args[i].(type) {
 		case ErrorCode:
 			code = v
+			codeProvided = true
 			args = append(args[:i], args[i+1:]...)
 		case FieldError:
 			fields = append(fields, &v)
@@ -196,9 +198,10 @@ func newWithArgs(depth Depth, message string, args ...interface{}) E {
 	}
 
 	if toWrap != nil {
-		toWrapCasted, ok := As(toWrap)
-		if ok {
-			_ = e.WithErrorCode(toWrapCasted.Code)
+		if !codeProvided {
+			if toWrapCasted, ok := As(toWrap); ok {
+				_ = e.WithErrorCode(toWrapCasted.Code)
+			}
 		}
 
 		e = e.WithNestedError(toWrap)
