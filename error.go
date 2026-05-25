@@ -68,6 +68,25 @@ func newWithCallerDepth(depth Depth, code ErrorCode, format string, messages ...
 	}
 }
 
+// newWithCallerDepthErrorf builds an Error using fmt.Errorf so the %w verb
+// in format resolves correctly. The wrap relationship is captured separately
+// in NestedError by the caller; this helper only owns message formatting.
+func newWithCallerDepthErrorf(depth Depth, code ErrorCode, format string, messages ...interface{}) E {
+	var st *StackTrace
+	if env.IsDebugActive() {
+		st = &StackTrace{
+			Trace:      debug.Stack(),
+			CallerPath: caller.NewCaller(depth).String(),
+		}
+	}
+
+	return &Error{
+		Code:    code,
+		Message: fmt.Errorf(format, messages...).Error(),
+		Trace:   st,
+	}
+}
+
 // GetHTTPStatus get's the http status for the error
 func (e *Error) GetHTTPStatus() int {
 	return e.Code.HTTPError

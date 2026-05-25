@@ -92,6 +92,27 @@ func (e Error) Unwrap() error {
 	return e.NestedError[0]
 }
 
+// Is reports whether any error in e's chain has an ErrorCode matching target's.
+// It implements the optional errors.Is interface from the standard library, so
+// stdlib errors.Is(err, target) will match by ErrorCode across the full nested
+// tree (including JoinedErrorCode containers).
+//
+// Returns false if target is nil or not an *Error. For non-*Error targets the
+// standard library continues traversal via Unwrap.
+func (e *Error) Is(target error) bool {
+	if target == nil {
+		return false
+	}
+
+	t, ok := As(target)
+	if !ok {
+		return false
+	}
+
+	_, found := Has(e, t.Code, true)
+	return found
+}
+
 func (e Error) MarshalJSON() ([]byte, error) {
 	// Create a custom type for marshaling that won't trigger the MarshalJSON method recursively
 	type AliasError struct {

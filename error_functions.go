@@ -160,8 +160,11 @@ func Join(errs ...error) error {
 
 func newWithArgs(depth Depth, message string, args ...interface{}) E {
 	var code = UnknownErrorCode
+	var codeProvided bool
 	var fields []*FieldError
-	var toWrap error
+	var wrapped []error
+
+	hasW := strings.Contains(message, "%w")
 
 	for i := 0; i < len(args); {
 		if args[i] == nil {
@@ -172,6 +175,7 @@ func newWithArgs(depth Depth, message string, args ...interface{}) E {
 		switch v := args[i].(type) {
 		case ErrorCode:
 			code = v
+			codeProvided = true
 			args = append(args[:i], args[i+1:]...)
 		case FieldError:
 			fields = append(fields, &v)
@@ -180,14 +184,24 @@ func newWithArgs(depth Depth, message string, args ...interface{}) E {
 			fields = append(fields, v)
 			args = append(args[:i], args[i+1:]...)
 		case error:
-			toWrap = v
-			args = append(args[:i], args[i+1:]...)
+			wrapped = append(wrapped, v)
+			if hasW {
+				i++
+			} else {
+				args = append(args[:i], args[i+1:]...)
+			}
 		default:
 			i++
 		}
 	}
 
-	e := newWithCallerDepth(depth, code, message, args...)
+	var e E
+	if hasW {
+		e = newWithCallerDepthErrorf(depth, code, message, args...)
+	} else {
+		e = newWithCallerDepth(depth, code, message, args...)
+	}
+
 	if len(fields) > 0 {
 		e.FieldErrors = fields
 		if code == UnknownErrorCode {
@@ -195,13 +209,14 @@ func newWithArgs(depth Depth, message string, args ...interface{}) E {
 		}
 	}
 
-	if toWrap != nil {
-		toWrapCasted, ok := As(toWrap)
-		if ok {
-			_ = e.WithErrorCode(toWrapCasted.Code)
+	if len(wrapped) > 0 {
+		if !codeProvided {
+			if firstCasted, ok := As(wrapped[0]); ok {
+				_ = e.WithErrorCode(firstCasted.Code)
+			}
 		}
 
-		e = e.WithNestedError(toWrap)
+		e = e.WithNestedError(wrapped...)
 	}
 
 	return e

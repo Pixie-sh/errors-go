@@ -2,11 +2,13 @@ package errors
 
 import (
 	"encoding/json"
+	goerrors "errors"
 	"fmt"
-	"github.com/pixie-sh/logger-go/env"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/pixie-sh/logger-go/env"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestErrors(t *testing.T) {
@@ -291,4 +293,167 @@ func TestErrorEdgeCases(t *testing.T) {
 	assert.Equal(t, currentErr.Code, unmarshallCurrentErr.Code)
 	assert.Equal(t, currentErr.Message, unmarshallCurrentErr.Message)
 	assert.Equal(t, currentErr.NestedError, unmarshallCurrentErr.NestedError)
+}
+
+// ErrorCode value layout: NewErrorCode validates that value%1000 is a real
+// HTTP status, so the test codes below use 10NNN suffixes mapping to known
+// codes (200, 201, 202, ...). This matches the convention in error_join_test.go.
+
+// TestWrapExplicitCodeOverridesNested verifies AC-1: an explicit ErrorCode
+// passed to Wrap is preserved on the resulting *Error, even when the wrapped
+// error is itself an *Error with a different code.
+func TestWrapExplicitCodeOverridesNested(t *testing.T) {
+	innerCode := NewErrorCode("INNER_T1", 10200)
+	outerCode := NewErrorCode("OUTER_T1", 20201)
+	inner := New("inner", innerCode)
+
+	wrapped := Wrap(inner, "wrapped", outerCode)
+
+	assert.Equal(t, outerCode, wrapped.Code)
+	assert.Len(t, wrapped.NestedError, 1)
+	assert.Equal(t, inner, wrapped.NestedError[0])
+}
+
+// TestWrapInheritsNestedCodeWhenNoExplicit verifies AC-2: when no explicit
+// ErrorCode is provided and the wrapped error is an *Error, the nested code
+// is inherited (regression guard for prior behavior).
+func TestWrapInheritsNestedCodeWhenNoExplicit(t *testing.T) {
+	innerCode := NewErrorCode("INNER_T2", 10202)
+	inner := New("inner", innerCode)
+
+	wrapped := Wrap(inner, "wrapped")
+
+	assert.Equal(t, innerCode, wrapped.Code)
+}
+
+// TestWrapFallbackForStdError verifies AC-3: wrapping a non-*Error with no
+// explicit ErrorCode falls back to UnknownErrorCode.
+func TestWrapFallbackForStdError(t *testing.T) {
+	stdErr := fmt.Errorf("plain")
+
+	wrapped := Wrap(stdErr, "wrapped")
+
+	assert.Equal(t, UnknownErrorCode, wrapped.Code)
+	assert.Len(t, wrapped.NestedError, 1)
+	assert.Equal(t, stdErr, wrapped.NestedError[0])
+}
+
+// TestErrorIsGoCompat verifies AC-4/AC-5: stdlib errors.Is matches *Error
+// values by ErrorCode across single-nested and multi-nested (joined) chains,
+// and falls through to Unwrap-based traversal for non-*Error targets.
+func TestErrorIsGoCompat(t *testing.T) {
+	codeA := NewErrorCode("CODE_A", 10203)
+	codeB := NewErrorCode("CODE_B", 10204)
+
+	sentinel := New("sentinel", codeA)
+
+	// Single-nested wrap with code preservation (inherited via newWithArgs).
+	wrapped := Wrap(sentinel, "ctx")
+	assert.True(t, goerrors.Is(wrapped, sentinel))
+
+	// Explicit override: outer code != sentinel code; sentinel is still found
+	// via Unwrap traversal of the nested chain.
+	overridden := Wrap(sentinel, "override", codeB)
+	assert.True(t, goerrors.Is(overridden, sentinel))
+
+	// Joined / multi-nested: both branches are reachable via Has traversal
+	// from inside the custom Is method.
+	other := New("other", codeB)
+	joined := Join(sentinel, other)
+	assert.True(t, goerrors.Is(joined, sentinel))
+	assert.True(t, goerrors.Is(joined, other))
+
+	// Non-*Error target: our Is returns false, stdlib continues via Unwrap()
+	// and matches by pointer identity.
+	plain := fmt.Errorf("plain")
+	wrappedPlain := Wrap(plain, "ctx")
+	assert.True(t, goerrors.Is(wrappedPlain, plain))
+
+	// Nil target: stdlib short-circuits without invoking our Is.
+	assert.False(t, goerrors.Is(wrapped, nil))
+
+	// Non-matching sentinel: not found anywhere in the chain.
+	unrelated := New("unrelated", NewErrorCode("UNRELATED", 10205))
+	assert.False(t, goerrors.Is(wrapped, unrelated))
+}
+
+// TestErrorAsGoCompat verifies AC-5: stdlib errors.As resolves an *Error
+// target through a single-nested chain (regression guard).
+func TestErrorAsGoCompat(t *testing.T) {
+	inner := New("inner", NewErrorCode("AS_TEST", 10206))
+	wrapped := Wrap(inner, "wrapped")
+
+	var got *Error
+	assert.True(t, goerrors.As(wrapped, &got))
+	assert.NotNil(t, got)
+}
+
+// TestWrapWVerbRendersInline verifies %w in the format string renders the
+// wrapped error's message inline, matching fmt.Errorf semantics. The wrapped
+// error is also captured in NestedError and reachable via Unwrap().
+func TestWrapWVerbRendersInline(t *testing.T) {
+	inner := fmt.Errorf("disk full")
+
+	wrapped := Wrap(inner, "save failed: %w")
+
+	assert.Equal(t, "save failed: disk full", wrapped.Message)
+	assert.Len(t, wrapped.NestedError, 1)
+	assert.Equal(t, inner, wrapped.NestedError[0])
+	assert.Equal(t, inner, goerrors.Unwrap(wrapped))
+	assert.True(t, goerrors.Is(wrapped, inner))
+}
+
+// TestNewWVerbRendersInline verifies %w works via New as well.
+func TestNewWVerbRendersInline(t *testing.T) {
+	inner := fmt.Errorf("connection refused")
+
+	err := New("dial failed: %w", inner)
+
+	assert.Equal(t, "dial failed: connection refused", err.Message)
+	assert.Len(t, err.NestedError, 1)
+	assert.Equal(t, inner, goerrors.Unwrap(err))
+}
+
+// TestWVerbWithErrorCode verifies %w coexists with explicit ErrorCode args.
+func TestWVerbWithErrorCode(t *testing.T) {
+	code := NewErrorCode("W_VERB_CODE", 10300)
+	inner := fmt.Errorf("upstream timeout")
+
+	err := New("call failed: %w", inner, code)
+
+	assert.Equal(t, code, err.Code)
+	assert.Equal(t, "call failed: upstream timeout", err.Message)
+	assert.Equal(t, inner, goerrors.Unwrap(err))
+}
+
+// TestMultipleWVerbs verifies multiple %w directives render all referenced
+// errors and capture all of them in NestedError, preserving order.
+func TestMultipleWVerbs(t *testing.T) {
+	a := fmt.Errorf("alpha")
+	b := fmt.Errorf("beta")
+
+	err := New("combined: %w and %w", a, b)
+
+	assert.Equal(t, "combined: alpha and beta", err.Message)
+	assert.Len(t, err.NestedError, 2)
+	assert.Equal(t, a, err.NestedError[0])
+	assert.Equal(t, b, err.NestedError[1])
+	// Unwrap() returns NestedError[0] per the library contract.
+	assert.Equal(t, a, goerrors.Unwrap(err))
+
+	jsonb, _ := json.Marshal(err)
+	fmt.Println(string(jsonb))
+}
+
+// TestNoWVerbBackwardCompat ensures calls without %w behave identically to
+// the pre-change code path.
+func TestNoWVerbBackwardCompat(t *testing.T) {
+	inner := fmt.Errorf("root cause")
+
+	err := Wrap(inner, "operation %s", "failed")
+
+	assert.Equal(t, "operation failed", err.Message)
+	assert.Len(t, err.NestedError, 1)
+	assert.Equal(t, inner, err.NestedError[0])
+	assert.Equal(t, inner, goerrors.Unwrap(err))
 }
